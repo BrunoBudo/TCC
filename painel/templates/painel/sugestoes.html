@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}Sugestões{% endblock %}
+{% block conteudo %}
+<h1>Sugestões</h1>
+<p class="sub">Alertas e recomendações geradas a partir das vendas e do estoque</p>
+<div class="card" style="margin-bottom:14px"><h3>Sugestões para o organizador</h3>
+  {% for s in sugestoes %}
+  <div class="line">
+    <span style="white-space:normal"><span class="tag {{ s.tipo }}">{{ s.rotulo }}</span> <b>{{ s.titulo }}</b><br><small style="color:var(--mut)">{{ s.texto }}</small></span>
+    <form method="post" action="{% url 'sugestao_dispensar' %}">{% csrf_token %}<input type="hidden" name="chave" value="{{ s.chave }}"><button class="btn ghost sm">Dispensar</button></form>
+  </div>
+  {% empty %}<div class="empty">Nenhuma sugestão no momento. Vendas e estoque estão dentro do esperado.</div>{% endfor %}
+</div>
+<div class="card"><h3>Recomendações para a próxima festa</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Produto</th><th>O que aconteceu</th><th>Sugestão</th></tr></thead>
+    <tbody>{% for r in recomendacoes %}<tr><td>{{ r.produto }}</td><td>{{ r.aconteceu }}</td><td>{{ r.sugestao }}</td></tr>{% empty %}<tr><td colspan="3" class="empty">Ainda não há dados suficientes para recomendar.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endblock %}

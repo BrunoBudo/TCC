@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% load static formatos l10n %} {% block titulo %}Nova
+venda{% endblock %} {% block conteudo %}
+<h1>Nova venda</h1>
+<p class="sub">Toque em um produto para adicionar ao carrinho</p>
+
+{% if not festa %}
+<div class="aviso">
+  Nenhuma festa ativa. Peça ao organizador para cadastrar uma em /admin/.
+</div>
+{% endif %} {% csrf_token %}
+
+<div class="pos">
+  <div class="prods">
+    {% for p in produtos %}
+    <button
+      type="button"
+      class="prod"
+      data-id="{{ p.pk }}"
+      data-nome="{{ p.nome }}"
+      data-preco="{{ p.preco|unlocalize }}"
+      data-estoque="{{ p.quantidade_estoque }}"
+      {%
+      if
+      p.quantidade_estoque=""
+      ="0"
+      %}disabled
+      style="opacity: 0.5"
+      {%
+      endif
+      %}
+    >
+      <b>{{ p.nome }}</b><span>{{ p.preco|brl }}</span><br />
+      <span>
+        {% if p.quantidade_estoque == 0 %} Esgotado {% else %} {{
+        p.quantidade_estoque }} em estoque {% endif %}
+      </span>
+    </button>
+    {% empty %}
+    <div class="empty">Nenhum produto cadastrado.</div>
+    {% endfor %}
+  </div>
+
+  <div class="card cart">
+    <h3>Carrinho</h3>
+    <div id="cl"></div>
+    <div class="tot"><span>Total</span><span id="ct">R$ 0,00</span></div>
+
+    <div class="pay" id="pay">
+      {% for valor, rotulo in formas %}
+      <button
+        type="button"
+        data-forma="{{ valor }}"
+        class="{% if valor == 'pix' %}on{% endif %}"
+      >
+        {{ rotulo }}
+      </button>
+      {% endfor %}
+    </div>
+
+    <button
+      type="button"
+      class="btn"
+      id="fin"
+      style="width: 100%; padding: 12px"
+      data-url="{% url 'venda_registrar' %}"
+    >
+      Finalizar venda
+    </button>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="{% static 'vendas/js/vendas.js' %}"></script>
+{% endblock %}

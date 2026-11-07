@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load formatos %}
+{% block titulo %}Dashboard{% endblock %}
+{% block conteudo %}
+<h1>Dashboard</h1>
+<p class="sub">{% if festa %}{{ festa.nome }} · resumo das vendas{% else %}Nenhuma festa ativa. Cadastre uma em /admin/.{% endif %}</p>
+<div class="grid4">
+  <div class="card kpi"><span>Vendas</span><b>{{ qtd }}</b></div>
+  <div class="card kpi"><span>Faturamento</span><b>{{ total|brl }}</b></div>
+  <div class="card kpi"><span>Ticket médio</span><b>{{ ticket|brl }}</b></div>
+  <div class="card kpi"><span>Itens com estoque baixo</span><b>{{ alertas|length }}</b></div>
+</div>
+<div class="two">
+  <div class="card"><h3>Vendas por hora</h3>
+    <div class="chart">{% for b in barras %}<div><i style="height:{{ b.altura }}px" title="{{ b.valor }} vendas"></i>{{ b.rotulo }}</div>{% empty %}<div class="empty" style="width:100%">Ainda não há vendas.</div>{% endfor %}</div>
+  </div>
+  <div class="card"><h3>Alertas de estoque</h3>
+    {% for p in alertas %}<div class="line"><span>{{ p.nome }}</span><span class="tag {{ p.status_classe }}">{% if p.quantidade_estoque == 0 %}Esgotado{% else %}{{ p.quantidade_estoque }} un.{% endif %}</span></div>{% empty %}<div class="empty">Nenhum alerta de estoque.</div>{% endfor %}
+  </div>
+</div>
+<div class="card" style="margin-top:14px"><h3>Produtos mais vendidos</h3>
+  <div class="rank">{% for t in top %}<div><span>{{ t.nome }}</span><div class="meter"><i style="width:{{ t.pct }}%"></i></div><b>{{ t.q }}</b></div>{% empty %}<div class="empty">Ainda não há vendas.</div>{% endfor %}</div>
+</div>
+{% endblock %}

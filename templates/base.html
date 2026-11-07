@@ -1,0 +1,26 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block titulo %}Sistema{% endblock %} · Vendas &amp; Estoque</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="app">
+  <nav aria-label="Menu principal">
+    <div class="brand">Vendas &amp; Estoque<small>{{ festa_atual.nome|default:"Nenhuma festa ativa" }}</small></div>
+    {% for item in menu %}
+    <a href="{% url item.url %}" class="{% if request.resolver_match.url_name == item.url %}on{% endif %}">{{ item.icone }} {{ item.nome }}{% if item.badge %}<span class="tag low" style="margin-left:auto">{{ item.badge }}</span>{% endif %}</a>
+    {% endfor %}
+    <div class="sp"></div>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="navbtn">⇥ Sair ({{ request.user.username }})</button></form>
+  </nav>
+  <main>{% block conteudo %}{% endblock %}</main>
+</div>
+<div class="toasts" id="toasts">{% for m in messages %}<div class="msg {{ m.tags }}" role="status">{{ m }}</div>{% endfor %}</div>
+<script src="{% static 'js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

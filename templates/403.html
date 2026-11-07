@@ -1,0 +1,52 @@
+{% load static %}<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Entrar · Vendas &amp; Estoque</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <section class="login">
+      <div class="side">
+        <h2>Controle de vendas e estoque em um só lugar</h2>
+        <p>Registre vendas, acompanhe o estoque e consulte relatórios.</p>
+      </div>
+      <div class="form">
+        <form method="post">
+          {% csrf_token %}
+          <h1>Entrar no sistema</h1>
+          {% if form.errors %}
+          <div class="erro">Usuário ou senha incorretos.</div>
+          {% endif %}
+          <input type="hidden" name="next" value="{{ next }}" />
+          <div class="fld">
+            <label for="id_username">Usuário</label
+            ><input
+              id="id_username"
+              name="username"
+              autocomplete="username"
+              required
+              autofocus
+            />
+          </div>
+          <div class="fld">
+            <label for="id_password">Senha</label
+            ><input
+              id="id_password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button class="btn" style="width: 100%">Entrar</button>
+        </form>
+      </div>
+    </section>
+  </body>
+</html>

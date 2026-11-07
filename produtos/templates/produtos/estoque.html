@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Estoque{% endblock %}
+{% block conteudo %}
+<h1>Estoque</h1>
+<p class="sub">Quantidades disponíveis e níveis mínimos</p>
+<form class="bar" method="get">
+  <select name="status" onchange="this.form.submit()" aria-label="Status">
+    <option value="">Todos os status</option>
+    <option value="esgotado" {% if filtro == "esgotado" %}selected{% endif %}>Esgotado</option>
+    <option value="baixo" {% if filtro == "baixo" %}selected{% endif %}>Baixo</option>
+    <option value="normal" {% if filtro == "normal" %}selected{% endif %}>Normal</option>
+  </select>
+  <span class="sp"></span>
+  {% if pode.estoque_editar %}<button type="button" class="btn ghost" onclick="abrirModal('m-entrada')">Registrar entrada</button>{% endif %}
+</form>
+<div class="card tw"><table>
+  <thead><tr><th>Produto</th><th class="n">Disponível</th><th class="n">Mínimo</th><th>Nível</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for p in produtos %}
+  <tr><td>{{ p.nome }}</td><td class="n">{{ p.quantidade_estoque }}</td><td class="n">{{ p.estoque_minimo }}</td>
+    <td><div class="meter"><i class="n-{{ p.status_classe }}" style="width:{{ p.nivel_pct }}%"></i></div></td>
+    <td><span class="tag {{ p.status_classe }}">{{ p.status_rotulo }}</span></td></tr>
+  {% empty %}
+  <tr><td colspan="5" class="empty">Nenhum produto com esse status.</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+
+{% if pode.estoque_editar %}
+<div class="modal" id="m-entrada" role="dialog" aria-modal="true" aria-labelledby="m-entrada-t">
+  <div class="card">
+    <h3 id="m-entrada-t">Registrar entrada de mercadoria</h3>
+    <form method="post" action="{% url 'estoque_entrada' %}">{% csrf_token %}
+      <div class="fld"><label for="e-prod">Produto</label><select name="produto" id="e-prod">{% for p in todos %}<option value="{{ p.pk }}">{{ p.nome }}</option>{% endfor %}</select></div>
+      <div class="fld"><label for="e-qtd">Quantidade</label><input name="quantidade" id="e-qtd" type="number" min="1" required></div>
+      <div class="fld"><label for="e-mot">Observação (opcional)</label><input name="motivo" id="e-mot" maxlength="200"></div>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn ghost" onclick="fecharModal('m-entrada')">Cancelar</button><button class="btn">Registrar entrada</button></div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

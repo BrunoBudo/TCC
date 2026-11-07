@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load formatos %}
+{% block titulo %}Relatórios{% endblock %}
+{% block conteudo %}
+<h1>Relatórios</h1>
+<p class="sub">Resumo financeiro e movimentações</p>
+<form class="bar" method="get">
+  <select name="periodo" onchange="this.form.submit()" aria-label="Período" style="max-width:220px">
+    <option value="festa" {% if periodo == "festa" %}selected{% endif %}>Festa ativa</option>
+    <option value="hoje" {% if periodo == "hoje" %}selected{% endif %}>Hoje</option>
+    <option value="7dias" {% if periodo == "7dias" %}selected{% endif %}>Últimos 7 dias</option>
+  </select>
+  <span class="sp"></span>
+  <button type="button" class="btn ghost" onclick="window.print()">Exportar PDF</button>
+  <a class="btn ghost" href="{% url 'relatorio_csv' %}?periodo={{ periodo }}" style="text-decoration:none">Exportar planilha</a>
+</form>
+<div class="grid4">
+  <div class="card kpi"><span>Total vendido</span><b>{{ total|brl }}</b></div>
+  {% for rotulo, valor in por_forma %}<div class="card kpi"><span>{{ rotulo }}</span><b>{{ valor|brl }}</b></div>{% endfor %}
+</div>
+<div class="two">
+  <div class="card"><h3>Faturamento por dia</h3>
+    <div class="chart">{% for b in barras %}<div><i style="height:{{ b.altura }}px" title="{{ b.valor|brl }}"></i>{{ b.rotulo }}</div>{% empty %}<div class="empty" style="width:100%">Sem vendas no período.</div>{% endfor %}</div>
+  </div>
+  <div class="card"><h3>Movimentações de estoque</h3>
+    {% for m in movimentacoes %}<div class="line"><span>{{ m.produto.nome }}<br><small style="color:var(--mut)">{{ m.criada_em|date:"d/m H:i" }} · {{ m.get_tipo_display }}</small></span><b>{% if m.quantidade > 0 %}+{% endif %}{{ m.quantidade }}</b></div>{% empty %}<div class="empty">Nenhuma movimentação.</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}
