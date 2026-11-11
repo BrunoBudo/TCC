@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block titulo %}Usuários{% endblock %}
+{% block conteudo %}
+<h1>Usuários</h1>
+<p class="sub">Crie as contas da equipe e escolha o perfil de cada pessoa.</p>
+<div class="bar"><span class="sp"></span><button type="button" class="btn" onclick="novoUsuario()">Novo usuário</button></div>
+<div class="card tw"><table>
+  <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead>
+  <tbody>
+  {% for l in linhas %}
+  <tr>
+    <td>{{ l.usuario.username }}{% if l.eu %} <span style="color:var(--mut)">(você)</span>{% endif %}</td>
+    <td>{{ l.usuario.first_name|default:"—" }}</td>
+    <td>{% if l.usuario.is_superuser %}Organizador <span style="color:var(--mut)">(administrador)</span>{% else %}{{ l.perfil_nome }}{% endif %}</td>
+    <td>{% if l.usuario.is_active %}<span class="tag ok">Ativo</span>{% else %}<span class="tag out">Desativado</span>{% endif %}</td>
+    <td>{{ l.usuario.last_login|date:"d/m/Y H:i"|default:"nunca" }}</td>
+    <td class="n">
+      {% if not l.usuario.is_superuser %}
+      <button type="button" class="btn ghost sm" data-id="{{ l.usuario.pk }}" data-username="{{ l.usuario.username }}" data-nome="{{ l.usuario.first_name }}" data-perfil="{{ l.perfil_grupo }}" onclick="editarUsuario(this)">Editar</button>
+      {% if not l.eu %}<form method="post" action="{% url 'usuario_alternar' l.usuario.pk %}" class="inline">{% csrf_token %}<button class="btn ghost sm">{% if l.usuario.is_active %}Desativar{% else %}Ativar{% endif %}</button></form>{% endif %}
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+
+<div class="modal" id="m-usuario" role="dialog" aria-modal="true" aria-labelledby="m-usuario-t">
+  <div class="card">
+    <h3 id="m-usuario-t">Novo usuário</h3>
+    <form method="post" action="{% url 'usuario_salvar' %}" autocomplete="off">{% csrf_token %}
+      <input type="hidden" name="id" id="fu-id">
+      <div class="fld"><label for="fu-username">Nome de usuário (para entrar)</label><input name="username" id="fu-username" maxlength="150" autocomplete="off"></div>
+      <div class="fld"><label for="fu-nome">Nome da pessoa</label><input name="first_name" id="fu-nome" maxlength="150"></div>
+      <div class="fld"><label for="fu-perfil">Perfil</label>
+        <select name="perfil" id="fu-perfil">{% for p in perfis %}<option value="{{ p }}">{{ p }}</option>{% endfor %}</select>
+      </div>
+      <div class="fld"><label for="fu-senha" id="fu-senha-rotulo">Senha</label><input type="password" name="senha" id="fu-senha" autocomplete="new-password"></div>
+      <p class="sub" style="margin:0 0 12px;font-size:13px">Organizador vê tudo. Caixa vende, consulta o histórico e o estoque. Vendedor só registra vendas.</p>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn ghost" onclick="fecharModal('m-usuario')">Cancelar</button><button class="btn">Salvar usuário</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function novoUsuario() {
+  document.getElementById("m-usuario-t").textContent = "Novo usuário";
+  ["fu-id", "fu-username", "fu-nome", "fu-senha"].forEach(function (i) { document.getElementById(i).value = ""; });
+  document.getElementById("fu-username").disabled = false;
+  document.getElementById("fu-perfil").value = "Vendedor";
+  document.getElementById("fu-senha-rotulo").textContent = "Senha";
+  abrirModal("m-usuario");
+}
+function editarUsuario(b) {
+  document.getElementById("m-usuario-t").textContent = "Editar usuário";
+  document.getElementById("fu-id").value = b.dataset.id;
+  document.getElementById("fu-username").value = b.dataset.username;
+  document.getElementById("fu-username").disabled = true;
+  document.getElementById("fu-nome").value = b.dataset.nome;
+  document.getElementById("fu-perfil").value = b.dataset.perfil;
+  document.getElementById("fu-senha").value = "";
+  document.getElementById("fu-senha-rotulo").textContent = "Nova senha (deixe em branco para não mudar)";
+  abrirModal("m-usuario");
+}
+</script>
+{% endblock %}

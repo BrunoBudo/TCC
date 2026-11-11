@@ -12,28 +12,8 @@ venda{% endblock %} {% block conteudo %}
 <div class="pos">
   <div class="prods">
     {% for p in produtos %}
-    <button
-      type="button"
-      class="prod"
-      data-id="{{ p.pk }}"
-      data-nome="{{ p.nome }}"
-      data-preco="{{ p.preco|unlocalize }}"
-      data-estoque="{{ p.quantidade_estoque }}"
-      {%
-      if
-      p.quantidade_estoque=""
-      ="0"
-      %}disabled
-      style="opacity: 0.5"
-      {%
-      endif
-      %}
-    >
-      <b>{{ p.nome }}</b><span>{{ p.preco|brl }}</span><br />
-      <span>
-        {% if p.quantidade_estoque == 0 %} Esgotado {% else %} {{
-        p.quantidade_estoque }} em estoque {% endif %}
-      </span>
+    <button type="button" class="prod" data-id="{{ p.pk }}" data-nome="{{ p.nome }}" data-preco="{{ p.preco|unlocalize }}" data-estoque="{{ p.quantidade_estoque }}" {% if p.quantidade_estoque == 0 %}disabled style="opacity:.5"{% endif %}>
+  <b>{{ p.nome }}</b><span>{{ p.preco|brl }}</span><br><span>{% if p.quantidade_estoque == 0 %}Esgotado{% else %}{{ p.quantidade_estoque }} em estoque{% endif %}</span>
     </button>
     {% empty %}
     <div class="empty">Nenhum produto cadastrado.</div>

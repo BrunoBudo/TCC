@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block titulo %}Festas{% endblock %}
+{% block conteudo %}
+<h1>Festas</h1>
+<p class="sub">Cadastre as festas. Só uma fica ativa por vez, e é nela que as vendas são registradas.</p>
+{% if not festa_atual %}<div class="aviso">Nenhuma festa ativa. Ative uma festa ou cadastre uma nova para poder registrar vendas.</div>{% endif %}
+<div class="bar"><span class="sp"></span><button type="button" class="btn" onclick="novaFesta()">Nova festa</button></div>
+<div class="card tw"><table>
+  <thead><tr><th>Nome</th><th>Início</th><th>Fim</th><th class="n">Vendas</th><th>Situação</th><th></th></tr></thead>
+  <tbody>
+  {% for l in linhas %}
+  <tr>
+    <td>{{ l.festa.nome }}</td>
+    <td>{{ l.festa.inicio|date:"d/m/Y H:i" }}</td>
+    <td>{{ l.festa.fim|date:"d/m/Y H:i" }}</td>
+    <td class="n">{{ l.festa.n_vendas }}</td>
+    <td>{% if l.festa.ativa %}<span class="tag ok">Ativa</span>{% else %}<span style="color:var(--mut)">Inativa</span>{% endif %}</td>
+    <td class="n">
+      {% if not l.festa.ativa %}<form method="post" action="{% url 'festa_ativar' l.festa.pk %}" class="inline">{% csrf_token %}<button class="btn ghost sm">Ativar</button></form>{% endif %}
+      <button type="button" class="btn ghost sm" data-id="{{ l.festa.pk }}" data-nome="{{ l.festa.nome }}" data-inicio="{{ l.inicio_input }}" data-fim="{{ l.fim_input }}" data-ativa="{% if l.festa.ativa %}1{% endif %}" onclick="editarFesta(this)">Editar</button>
+      <form method="post" action="{% url 'festa_excluir' l.festa.pk %}" class="inline" onsubmit="return confirm('Excluir a festa {{ l.festa.nome|escapejs }}?')">{% csrf_token %}<button class="btn ghost sm">Excluir</button></form>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6" class="empty">Nenhuma festa cadastrada. Clique em "Nova festa".</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+
+<div class="modal" id="m-festa" role="dialog" aria-modal="true" aria-labelledby="m-festa-t">
+  <div class="card">
+    <h3 id="m-festa-t">Nova festa</h3>
+    <form method="post" action="{% url 'festa_salvar' %}">{% csrf_token %}
+      <input type="hidden" name="id" id="ff-id">
+      <div class="fld"><label for="ff-nome">Nome da festa</label><input name="nome" id="ff-nome" maxlength="150" required></div>
+      <div class="row">
+        <div class="fld" style="flex:1"><label for="ff-inicio">Início</label><input type="datetime-local" name="inicio" id="ff-inicio" required></div>
+        <div class="fld" style="flex:1"><label for="ff-fim">Fim</label><input type="datetime-local" name="fim" id="ff-fim" required></div>
+      </div>
+      <div class="fld"><label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="ativa" id="ff-ativa" style="width:auto"> Definir como festa ativa (a que está ativa hoje fica inativa)</label></div>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn ghost" onclick="fecharModal('m-festa')">Cancelar</button><button class="btn">Salvar festa</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function novaFesta() {
+  document.getElementById("m-festa-t").textContent = "Nova festa";
+  ["ff-id", "ff-nome", "ff-inicio", "ff-fim"].forEach(function (i) { document.getElementById(i).value = ""; });
+  document.getElementById("ff-ativa").checked = true;
+  abrirModal("m-festa");
+}
+function editarFesta(b) {
+  document.getElementById("m-festa-t").textContent = "Editar festa";
+  document.getElementById("ff-id").value = b.dataset.id;
+  document.getElementById("ff-nome").value = b.dataset.nome;
+  document.getElementById("ff-inicio").value = b.dataset.inicio;
+  document.getElementById("ff-fim").value = b.dataset.fim;
+  document.getElementById("ff-ativa").checked = b.dataset.ativa === "1";
+  abrirModal("m-festa");
+}
+</script>
+{% endblock %}

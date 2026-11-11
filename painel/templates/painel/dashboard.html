@@ -12,7 +12,7 @@
 </div>
 <div class="two">
   <div class="card"><h3>Vendas por hora</h3>
-    <div class="chart">{% for b in barras %}<div><i style="height:{{ b.altura }}px" title="{{ b.valor }} vendas"></i>{{ b.rotulo }}</div>{% empty %}<div class="empty" style="width:100%">Ainda não há vendas.</div>{% endfor %}</div>
+      <div class="chart">{% for b in barras %}<div><b style="display:block;color:var(--ink)">{{ b.valor }}</b><i style="height:{{ b.altura }}px" title="{{ b.valor }} vendas"></i>{{ b.rotulo }}</div>{% empty %}<div class="empty" style="width:100%">Ainda não há vendas.</div>{% endfor %}</div>
   </div>
   <div class="card"><h3>Alertas de estoque</h3>
     {% for p in alertas %}<div class="line"><span>{{ p.nome }}</span><span class="tag {{ p.status_classe }}">{% if p.quantidade_estoque == 0 %}Esgotado{% else %}{{ p.quantidade_estoque }} un.{% endif %}</span></div>{% empty %}<div class="empty">Nenhum alerta de estoque.</div>{% endfor %}

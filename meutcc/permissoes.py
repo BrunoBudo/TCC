@@ -19,6 +19,8 @@ ACESSO = {
     # ações específicas
     "estoque_editar": {"organizador"},
     "venda_cancelar": {"organizador"},
+    "festas": {"organizador"},      # NOVO
+    "usuarios": {"organizador"},
 }
 
 ORDEM_MENU = [
@@ -29,6 +31,8 @@ ORDEM_MENU = [
     ("estoque", "Estoque", "▤"),
     ("relatorios", "Relatórios", "◔"),
     ("sugestoes", "Sugestões", "✦"),
+    ("festas", "Festas", "⚑"),      # NOVO
+    ("usuarios", "Usuários", "☺"),  # NOVO
 ]
 
 

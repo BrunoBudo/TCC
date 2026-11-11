@@ -26,8 +26,8 @@ h1{font-size:24px;margin:0 0 4px}
 .kpi span{color:var(--mut);font-size:13px}
 .two{display:grid;grid-template-columns:2fr 1fr;gap:14px}
 .btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600}
-.dark .btn,:root[data-theme="dark"] .btn{color:#06201d}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#06201d}}
+:root[data-theme="dark"] .btn:not(.ghost){color:#06201d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.ghost){color:#06201d}}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ln)}
 .btn.sm{padding:5px 10px;font-size:13px}
 input,select{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:9px 12px;width:100%}
@@ -101,3 +101,8 @@ tr.cancelada td:last-child{text-decoration:none}
 .login .side{background:var(--ac)}
 .center{min-height:100vh;display:grid;place-items:center;padding:20px}
 @media print{nav,.bar,.toasts,.btn{display:none!important}.app{display:block}main{padding:0;max-width:none}body{background:#fff}}
+
+/* botões de contorno legíveis no modo escuro */
+:root .btn.ghost,
+:root:not([data-theme="light"]) .btn.ghost,
+:root[data-theme="dark"] .btn.ghost{color:var(--ink);background:transparent;border-color:var(--mut)}
